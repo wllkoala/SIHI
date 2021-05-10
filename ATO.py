@@ -28,6 +28,8 @@ class ATO_check():
         self.df_ato = pd.read_excel(self.ato_report,
                                     sheet_name="ATO",
                                     engine="openpyxl")
+        self.df_ato = self.df_ato.loc[:, ~self.df_ato.columns.str.
+                                      contains('Unnamed')]
         self.df_bom_list = pd.read_excel(ato_report,
                                          sheet_name="BomList",
                                          engine="openpyxl")
