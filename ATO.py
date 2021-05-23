@@ -12,7 +12,7 @@ root = Tk()
 root.withdraw()
 
 
-class ATO_check():
+class ATO_check:
     def __init__(self, ato_report, storage_report):
         self.ato_report = ato_report
         self.storage_report = storage_report
@@ -29,12 +29,12 @@ class ATO_check():
                                     sheet_name="ATO",
                                     engine="openpyxl")
         self.df_ato = self.df_ato.loc[:, ~self.df_ato.columns.str.
-                                      contains('Unnamed')]
+                                      contains("Unnamed")]
         self.df_bom_list = pd.read_excel(ato_report,
                                          sheet_name="BomList",
                                          engine="openpyxl")
         self.df_bom_list = self.df_bom_list.loc[:, ~self.df_bom_list.columns.
-                                                str.contains('Unnamed')]
+                                                str.contains("Unnamed")]
         print(self.df_bom_list)
         print(self.df_ato)
 
@@ -43,9 +43,21 @@ class ATO_check():
                                           engine="openpyxl")
         df_storage_report.fillna(0, inplace=True)
         non_use_sub = [
-            "DALIAN-FG", "DALIAN-RAW", "LC-FPD", "LOL-FPD", "MRO-FPD",
-            "QA-INSP", "QA-MRB", "QD-FG", "QD-RAW", "RT-W", "SY-FG", "SY-RAW",
-            "TOOL-FPD", "Tooling", "RT-V"
+            "DALIAN-FG",
+            "DALIAN-RAW",
+            "LC-FPD",
+            "LOL-FPD",
+            "MRO-FPD",
+            "QA-INSP",
+            "QA-MRB",
+            "QD-FG",
+            "QD-RAW",
+            "RT-W",
+            "SY-FG",
+            "SY-RAW",
+            "TOOL-FPD",
+            "Tooling",
+            "RT-V",
         ]
         df_storage_report_ATO = df_storage_report.copy()
         for sub in non_use_sub:
@@ -67,7 +79,7 @@ class ATO_check():
                 print(sn)
                 self.cal_avaliable_qty(index, sn)
                 self.df_ato.loc[index, "Avaliable"] = self.avaliable
-                sheet_name = f'{index}_{sn}'
+                sheet_name = f"{index}_{sn}"
                 self.df_ato.loc[
                     index, "BOM"] = f'=HYPERLINK("#{sheet_name}!A1","BOM")'
             else:
@@ -86,14 +98,14 @@ class ATO_check():
         df_cal_qty = pd.merge(self.df_bom,
                               self.df_buffer,
                               on="Item",
-                              how='left')
+                              how="left")
         df_cal_qty.fillna(0, inplace=True)
         df_cal_qty["diff"] = (df_cal_qty["On-hand"] -
                               df_cal_qty["Qty_need"]) / self.df_bom["Qty"]
         df_cal_qty = pd.merge(self.df_bom_description,
                               df_cal_qty,
                               on="Item",
-                              how='right')
+                              how="right")
         df_cal_qty[
             "Back To Summary"] = '=HYPERLINK("#Summary!A1","Back To Summary")'
         print(df_cal_qty)
@@ -112,7 +124,7 @@ class ATO_check():
         self.df_buffer = pd.merge(self.df_buffer,
                                   self.df_bom_avaliable,
                                   on="Item",
-                                  how='left')
+                                  how="left")
         self.df_buffer.fillna(0, inplace=True)
         self.df_buffer[
             "On-hand"] = self.df_buffer["On-hand"] - self.df_buffer["Qty"]
@@ -120,7 +132,7 @@ class ATO_check():
         wb = load_workbook("Summary.xlsx")
         with pd.ExcelWriter("Summary.xlsx", engine="openpyxl") as writer:
             writer.book = wb
-            df_cal_qty.to_excel(writer, sheet_name=f'{index}_{sn}', index=None)
+            df_cal_qty.to_excel(writer, sheet_name=f"{index}_{sn}", index=None)
 
     def save_ato_excel(self):
         # 装载excel
@@ -160,7 +172,7 @@ if __name__ == "__main__":
         summary_workbook.save("Summary.xlsx")
         ato = ATO_check(ato_report, storage_report)
         ato.start_to_run()
-        input('Press <Enter>')
+        input("Press <Enter>")
     except Exception as err:
         messagebox.showerror("Warning!", err)
         with open(os.path.join(os.getcwd(), "error.txt"), "w+") as f:
